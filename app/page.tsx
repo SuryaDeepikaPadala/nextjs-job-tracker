@@ -1,6 +1,7 @@
 import { MoveRightIcon } from "lucide-react"
 import Link from "next/link"
 import ImageSwitch from "./components/ImageSwitching"
+import FeatureTabs from "./components/FeatureTabs"
 
 const Home = () => {
   return (
@@ -8,7 +9,7 @@ const Home = () => {
 
       {/* Hero */}
       <main className="max-w-3xl text-center space-y-8">
-        <h2 className="text-5xl md:text-6xl font-bold leading-tight tracking-tight bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <h2 className="text-5xl md:text-6xl font-medium leading-tight tracking-tight bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Track Your Job Applications Smarter 
         </h2>
         
@@ -32,9 +33,13 @@ const Home = () => {
         </p>
       </main>
 
-      {/* Feature Section */}
+      {/* Image Section */}
       <section className="w-full max-w-5xl backdrop-blur-xl bg-white/60 p-8 rounded-3xl shadow-xl border border-white/40">
         <ImageSwitch />
+      </section>
+      {/* Feature Section */}
+      <section>
+        <FeatureTabs/>
       </section>
 
     </div>
