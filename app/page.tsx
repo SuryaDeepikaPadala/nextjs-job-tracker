@@ -5,11 +5,11 @@ import FeatureTabs from "./components/FeatureTabs"
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-linear-to-br from-white via-blue-50 to-purple-100 flex flex-col items-center px-6 py-16 gap-16">
+    <div className="min-h-screen bg-linear-to-br from-white via-blue-50 to-cyan-100 flex flex-col items-center px-6 py-16 gap-16">
 
       {/* Hero */}
       <main className="max-w-3xl text-center space-y-8">
-        <h2 className="text-5xl md:text-6xl font-medium leading-tight tracking-tight bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <h2 className="text-5xl md:text-6xl font-medium leading-tight tracking-tight bg-linear-to-br from-blue-800 to-cyan-400 bg-clip-text text-transparent">
           Track Your Job Applications Smarter 
         </h2>
         
@@ -20,7 +20,7 @@ const Home = () => {
 
         <div className="flex items-center justify-center gap-4">
           <Link href="/auth/sign-in">
-            <button className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 text-white px-7 py-3 rounded-xl font-medium hover:scale-105 transition-all shadow-xl">
+            <button className="flex items-center gap-2 bg-linear-to-r from-blue-600 via-blue-500 to-cyan-400 text-white px-7 py-3 rounded-xl font-medium hover:scale-105 transition-all shadow-xl">
               Get Started <MoveRightIcon size={18} />
             </button>
           </Link>

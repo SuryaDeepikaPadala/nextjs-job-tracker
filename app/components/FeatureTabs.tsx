@@ -29,7 +29,7 @@ const FeatureTabs = () => {
       <div className="text-center mb-12 space-y-4">
         <h2 className="text-3xl md:text-4xl font-medium">
           Everything you need to{" "}
-          <span className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <span className=" bg-linear-to-br from-blue-800 to-cyan-400 bg-clip-text text-transparent">
             manage your job search
           </span>
         </h2>
@@ -48,7 +48,7 @@ const FeatureTabs = () => {
           >
             <div className="mb-4">{tab.icon}</div>
 
-            <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-500 transition  ">
+            <h3 className="text-xl font-semibold mb-2 group-hover:text-gray-800 transition  ">
               {tab.title}
             </h3>
 
