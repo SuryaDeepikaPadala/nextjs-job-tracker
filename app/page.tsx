@@ -1,7 +1,7 @@
 import { MoveRightIcon } from "lucide-react"
 import Link from "next/link"
-import ImageSwitch from "./components/ImageSwitching"
-import FeatureTabs from "./components/FeatureTabs"
+import ImageSwitch from "../components/ImageSwitching"
+import FeatureTabs from "../components/FeatureTabs"
 
 const Home = () => {
   return (

@@ -1,7 +1,10 @@
 "use client"
 
+import { signUp } from "@/lib/auth-client"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react"
+import toast from "react-hot-toast"
 
 const SignUp = () => {
   const initialState = {
@@ -11,7 +14,8 @@ const SignUp = () => {
   }
 
   const [registerFormData, setRegisterFormData] = useState(initialState)
-
+  const[loading,setLoading]=useState(false)
+  const router=useRouter()
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     setRegisterFormData({
       ...registerFormData,
@@ -19,10 +23,32 @@ const SignUp = () => {
     })
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(registerFormData)
-    setRegisterFormData(initialState)
+    try {
+      setLoading(true)
+      const result = await signUp.email({
+        name: registerFormData.name,
+        email: registerFormData.email,
+        password: registerFormData.password,
+      })
+      if(result?.error)
+      {
+
+       toast.error(result?.error?.message ||"Something went wrong")
+      }
+      else
+      {
+        router.push("/")
+        toast.success("Account Created Successfully")
+      }
+      
+    } catch (error) {
+      toast.error("Something went wrong")
+    }
+    finally{
+      setLoading(false)
+    }
   }
 
   return (
@@ -71,9 +97,10 @@ const SignUp = () => {
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-3 rounded-lg  bg-linear-to-br from-blue-800 to-cyan-400 text-white font-medium hover:scale-105 transition-all shadow-md"
           >
-            Sign Up
+           {loading?"Creating Account...":"Sign Up"}
           </button>
         </form>
 

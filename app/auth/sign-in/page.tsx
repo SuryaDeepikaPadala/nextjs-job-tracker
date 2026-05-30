@@ -1,7 +1,10 @@
 "use client"
 
+import { signIn } from "@/lib/auth-client"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react"
+import toast from "react-hot-toast"
 
 const SignIn = () => {
   const initialState = {
@@ -11,7 +14,7 @@ const SignIn = () => {
   }
 
   const [loginFormData, setLoginFormData] = useState(initialState)
-
+  const router=useRouter()
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     setLoginFormData({
       ...loginFormData,
@@ -19,10 +22,27 @@ const SignIn = () => {
     })
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(loginFormData)
-    setLoginFormData(initialState)
+    try {
+      const result = await signIn.email({
+       
+          email: loginFormData.email,
+          password: loginFormData.password,
+        
+      })
+      if(result?.error)
+      {
+        toast.error(result?.error?.message ||"something went wrong")
+      }
+      else
+      {
+          toast.success("Redirecting...")
+          router.push("/dashboard")
+      }
+    } catch (error) {
+      toast.error("something went wrong")
+    }
   }
 
   return (

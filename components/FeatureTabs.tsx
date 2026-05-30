@@ -48,7 +48,7 @@ const FeatureTabs = () => {
           >
             <div className="mb-4">{tab.icon}</div>
 
-            <h3 className="text-xl font-semibold mb-2 group-hover:text-gray-800 transition  ">
+            <h3 className="text-xl font-semibold mb-2  transition  ">
               {tab.title}
             </h3>
 
