@@ -6,7 +6,7 @@ import Logout from "./Logout"
 
 const Navbar = () => {
   const { data } = useSession()
-
+  console.log(data)
   return (
     <nav className="flex items-center justify-between px-8 py-4 backdrop-blur-xl bg-white/70 border-b border-white/40 sticky top-0 z-50">
 

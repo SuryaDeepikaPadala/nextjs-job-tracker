@@ -19,7 +19,7 @@ const Home = () => {
         </p>
 
         <div className="flex items-center justify-center gap-4">
-          <Link href="/auth/sign-in">
+          <Link href="/auth/dashboard">
             <button className="flex items-center gap-2 bg-linear-to-r from-blue-600 via-blue-500 to-cyan-400 text-white px-7 py-3 rounded-xl font-medium hover:scale-105 transition-all shadow-xl">
               Get Started <MoveRightIcon size={18} />
             </button>
