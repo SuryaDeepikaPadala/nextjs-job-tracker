@@ -1,229 +1,357 @@
 "use client"
 
-import React, { ChangeEvent, FormEvent, useState } from 'react'
-import { Plus, X } from 'lucide-react'
-import { createJobApplication } from '@/lib/actions/job-application'
-import toast from 'react-hot-toast'
+
+
+
+
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useState,
+} from "react"
+
+import { Plus, X, Loader2 } from "lucide-react"
+
+import {
+  createJobApplication,
+  updateJobApplication,
+} from "@/lib/actions/job-application"
+
+import toast from "react-hot-toast"
 
 interface DialogProps {
   columnId: string
   boardId: string
+  job?: any
+  open?: boolean
+  onClose?: () => void
 }
 
-const JobApplicationDialog = ({ columnId, boardId }: DialogProps) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const initialState={
-    company:"",
-    position:"",
-    location:"",
-    salary:"",
-    jobUrl:"",
-    tags:"",
-    description:"",
-    notes:""
+const JobApplicationDialog = ({
+  columnId,
+  boardId,
+  job,
+  open,
+  onClose,
+}: DialogProps) => {
+  const isEditMode = !!job
+
+  const initialState = {
+    company: job?.company || "",
+    position: job?.position || "",
+    location: job?.location || "",
+    salary: job?.salary || "",
+    jobUrl: job?.jobUrl || "",
+    tags: job?.tags?.join(", ") || "",
+    description: job?.description || "",
+    notes: job?.notes || "",
   }
-  const[jobFormData,setJobFormData]=useState(initialState)
-  // Quick helper to prevent layout scrolling when modal is open
-  if (typeof window !== 'undefined') {
-    if (isOpen) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = 'unset'
+
+  const [isOpen, setIsOpen] = useState(open || false)
+
+  const [loading, setLoading] = useState(false)
+
+  const [jobFormData, setJobFormData] =
+    useState(initialState)
+
+  useEffect(() => {
+    if (open !== undefined) {
+      setIsOpen(open)
+    }
+  }, [open])
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen
+      ? "hidden"
+      : "unset"
+
+    return () => {
+      document.body.style.overflow = "unset"
+    }
+  }, [isOpen])
+
+  const closeDialog = () => {
+    setIsOpen(false)
+
+    if (onClose) {
+      onClose()
+    }
   }
-  const handleOnChange=(e:ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=>{
+
+  const handleOnChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setJobFormData({
       ...jobFormData,
-      [e.target.name]:e.target.value
+      [e.target.name]: e.target.value,
     })
   }
-  const handleSubmit=async(e:FormEvent)=>{
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+
     try {
-       e.preventDefault()
-      const result=await createJobApplication({jobData:jobFormData,columnId,boardId})
-      if(result.success)
-      {
-        setIsOpen(false)
-        setJobFormData(initialState)
-      }
-      else
-      {
-        toast.error(result?.error || "")
+      setLoading(true)
+
+      let result
+
+      if (isEditMode) {
+        result = await updateJobApplication({
+          jobId: job._id,
+          columnId,
+          boardId,
+          jobData: jobFormData,
+        })
+      } else {
+        result = await createJobApplication({
+          jobData: jobFormData,
+          columnId,
+          boardId,
+        })
       }
 
-    
+      if (result.success) {
+        toast.success(
+          isEditMode
+            ? "Application updated"
+            : "Application created"
+        )
+
+        setJobFormData(initialState)
+
+        closeDialog()
+      } else {
+        toast.error(result.error || "Something went wrong")
+      }
     } catch (error) {
-      toast.error("something went wrong")
       console.log(error)
+
+      toast.error("Something went wrong")
+    } finally {
+      setLoading(false)
     }
-   
   }
+
   return (
     <>
-      {/* Trigger Button - Sits beautifully inside the dashed column container */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex items-center justify-center gap-1.5 w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/80 text-xs font-semibold text-slate-500 hover:text-slate-700 transition-all shadow-sm"
-      >
-        <Plus size={14} />
-        Add Application
-      </button>
+      {/* Create Trigger */}
+      {!isEditMode && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-xs font-semibold text-slate-500 transition-all hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700"
+        >
+          <Plus size={14} />
+          Add Application
+        </button>
+      )}
 
-      {/* Modal Overlay Shell */}
+      {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop Blur Layer */}
-          <div 
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => setIsOpen(false)}
+
+          {/* Backdrop */}
+          <div
+            onClick={closeDialog}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
           />
 
-          {/* Modal Content Box */}
-          <div className="relative bg-white w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl border border-slate-100 p-6 z-10 flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            
-            {/* Close Button */}
+          {/* Dialog */}
+          <div className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-y-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
+
+            {/* Close */}
             <button
-              onClick={() => setIsOpen(false)}
-              className="absolute right-4 top-4 p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+              onClick={closeDialog}
+              className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
             >
-              <X size={16} />
+              <X size={18} />
             </button>
 
-            {/* Modal Header */}
-            <div className="mb-5">
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight">Add Job Application</h2>
-              <p className="text-xs text-slate-500 font-medium">Track a new opportunity in your pipeline.</p>
+            {/* Header */}
+            <div className="mb-6">
+              <h2 className="text-xl font-bold tracking-tight text-slate-900">
+                {isEditMode
+                  ? "Edit Job Application"
+                  : "Add Job Application"}
+              </h2>
+
+              <p className="mt-1 text-sm text-slate-500">
+                {isEditMode
+                  ? "Update your application details."
+                  : "Track a new opportunity in your pipeline."}
+              </p>
             </div>
 
-            {/* Form Fields Layout */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              
-              <div className="grid grid-cols-2 gap-4">
+            {/* Form */}
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-5"
+            >
+
+              {/* Row 1 */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="company" className="text-xs font-semibold text-slate-600">Company *</label>
-                  <input 
-                    type="text" 
+                  <label className="text-xs font-semibold text-slate-600">
+                    Company *
+                  </label>
+
+                  <input
+                    type="text"
+                    name="company"
+                    required
                     value={jobFormData.company}
-                    id="company" 
-                    name="company" 
-                    required 
-                    placeholder="e.g., Google"
-                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all placeholder:text-slate-400 bg-slate-50/30"
-                    onChange={(e)=>handleOnChange(e)}
+                    onChange={handleOnChange}
+                    placeholder="Google"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                   />
                 </div>
+
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="position" className="text-xs font-semibold text-slate-600">Position *</label>
-                  <input 
-                    type="text" 
+                  <label className="text-xs font-semibold text-slate-600">
+                    Position *
+                  </label>
+
+                  <input
+                    type="text"
+                    name="position"
+                    required
                     value={jobFormData.position}
-                    id="position" 
-                    name="position" 
-                    required 
-                    placeholder="e.g., Frontend Engineer"
-                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all placeholder:text-slate-400 bg-slate-50/30"
-                     onChange={(e)=>handleOnChange(e)}
+                    onChange={handleOnChange}
+                    placeholder="Frontend Developer"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* Row 2 */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="location" className="text-xs font-semibold text-slate-600">Location</label>
-                  <input 
-                    type="text" 
+                  <label className="text-xs font-semibold text-slate-600">
+                    Location
+                  </label>
+
+                  <input
+                    type="text"
                     name="location"
                     value={jobFormData.location}
-                    id="location" 
-                    placeholder="e.g., Hyderabad / Remote"
-                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all placeholder:text-slate-400 bg-slate-50/30"
-                     onChange={(e)=>handleOnChange(e)}
+                    onChange={handleOnChange}
+                    placeholder="Remote / Hyderabad"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                   />
                 </div>
+
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="salary" className="text-xs font-semibold text-slate-600">Salary Package</label>
-                  <input 
-                    type="text" 
+                  <label className="text-xs font-semibold text-slate-600">
+                    Salary
+                  </label>
+
+                  <input
+                    type="text"
                     name="salary"
                     value={jobFormData.salary}
-                    id="salary" 
-                    placeholder="e.g., 6 LPA"
-                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all placeholder:text-slate-400 bg-slate-50/30"
-                     onChange={(e)=>handleOnChange(e)}
+                    onChange={handleOnChange}
+                    placeholder="8 LPA"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* Row 3 */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="joburl" className="text-xs font-semibold text-slate-600">Job Posting URL</label>
-                  <input 
-                    type="url" 
-                    id="joburl" 
-                    name="jobUrl" 
+                  <label className="text-xs font-semibold text-slate-600">
+                    Job URL
+                  </label>
+
+                  <input
+                    type="url"
+                    name="jobUrl"
                     value={jobFormData.jobUrl}
+                    onChange={handleOnChange}
                     placeholder="https://linkedin.com/..."
-                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all placeholder:text-slate-400 bg-slate-50/30"
-                     onChange={(e)=>handleOnChange(e)}
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                   />
                 </div>
+
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="tags" className="text-xs font-semibold text-slate-600">Tags</label>
-                  <input 
-                    type="text" 
-                    id="tags" 
-                    name="tags" 
+                  <label className="text-xs font-semibold text-slate-600">
+                    Tags
+                  </label>
+
+                  <input
+                    type="text"
+                    name="tags"
                     value={jobFormData.tags}
-                    placeholder="React, Remote, Full-time"
-                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all placeholder:text-slate-400 bg-slate-50/30"
-                     onChange={(e)=>handleOnChange(e)}
+                    onChange={handleOnChange}
+                    placeholder="React, Remote, Full Time"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                   />
                 </div>
               </div>
 
+              {/* Description */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="description" className="text-xs font-semibold text-slate-600">Job Description</label>
-                <textarea 
-                  id="description" 
-                  name="description" 
+                <label className="text-xs font-semibold text-slate-600">
+                  Description
+                </label>
+
+                <textarea
+                  rows={4}
+                  name="description"
                   value={jobFormData.description}
-                  rows={3} 
-                  placeholder="Paste core responsibilities or requirements..."
-                  className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all resize-none placeholder:text-slate-400 bg-slate-50/30"
-                   onChange={(e)=>handleOnChange(e)}
+                  onChange={handleOnChange}
+                  placeholder="Job responsibilities..."
+                  className="resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                 />
               </div>
 
+              {/* Notes */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="notes" className="text-xs font-semibold text-slate-600">Personal Notes</label>
-                <textarea 
-                  id="notes" 
-                  name="notes" 
+                <label className="text-xs font-semibold text-slate-600">
+                  Notes
+                </label>
+
+                <textarea
+                  rows={3}
+                  name="notes"
                   value={jobFormData.notes}
-                  rows={2} 
-                  placeholder="Interviewer names, follow-up timelines, or application thoughts..."
-                  className="px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all resize-none placeholder:text-slate-400 bg-slate-50/30"
-                   onChange={(e)=>handleOnChange(e)}
+                  onChange={handleOnChange}
+                  placeholder="Interview notes, follow-up reminders..."
+                  className="resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white"
                 />
               </div>
 
-              {/* Action Control Buttons Footer */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 mt-6">
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-5">
+
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsOpen(false)
-                    setJobFormData(initialState)
-                  }}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+                  onClick={closeDialog}
+                  className="rounded-xl px-4 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 transition-colors shadow-sm"
+                  disabled={loading}
+                  className="flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Add Application
+                  {loading && (
+                    <Loader2
+                      size={14}
+                      className="animate-spin"
+                    />
+                  )}
+
+                  {isEditMode
+                    ? "Update Application"
+                    : "Add Application"}
                 </button>
               </div>
-
             </form>
           </div>
         </div>
