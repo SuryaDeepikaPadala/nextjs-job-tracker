@@ -93,10 +93,7 @@ const JobCard = ({
       {/* HEADER SECTION WITH DRAG GRIP */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-1.5 flex-1 min-w-0">
-          {/* ⭐ THE DRAG HANDLE 
-              Only clicking/dragging this specific element moves the card.
-              The rest of the card handles clicks normally without interference!
-          */}
+          
           <div
             {...listeners}
             {...attributes}
@@ -131,14 +128,14 @@ const JobCard = ({
           {/* DROPDOWN OPTIONS OVERLAY */}
           {showMenu && (
             <>
-              {/* Invisible backdrop shield */}
+              
               <div
-                className="fixed inset-0 z-[999]"
+                className="fixed inset-0 z-999"
                 onClick={() => setShowMenu(false)}
               />
 
-              {/* ⭐ FIXED POPUP CONTAINER: Uses solid white background and higher z-index layers */}
-              <div className="absolute right-0 mt-1 w-52 rounded-xl border border-slate-200 bg-white shadow-xl z-[1000] py-1.5 flex flex-col">
+             
+              <div className="absolute right-0 mt-1 w-52 rounded-xl border border-slate-200 bg-white shadow-xl z-1000 py-1.5 flex flex-col">
                 <button
                   onClick={() => {
                     onEdit()

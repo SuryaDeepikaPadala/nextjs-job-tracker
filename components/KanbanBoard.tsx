@@ -65,7 +65,7 @@ const KanbanBoard = ({
     setSelectedColumnId("")
   }
 
-  // ⭐ DRAG LOGIC
+  //  DRAG LOGIC
   const handleDragEnd = async (event: any) => {
   const { active, over } = event
 
@@ -76,7 +76,7 @@ const KanbanBoard = ({
 
   let oldColumnId = ""
 
-  // Finds which column the job came from
+  
   for (const col of board.columns) {
     if (col.jobApplications.some((j: any) => j._id === jobId)) {
       oldColumnId = col._id
@@ -132,7 +132,7 @@ const KanbanBoard = ({
                 </div>
 
                 {/* JOBS */}
-                <div className="flex min-h-[200px] flex-col gap-3">
+                <div className="flex min-h-50 flex-col gap-3">
                   {col.jobApplications &&
                     [...col.jobApplications]
                       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))

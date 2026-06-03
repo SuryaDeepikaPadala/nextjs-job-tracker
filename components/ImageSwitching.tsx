@@ -2,14 +2,16 @@
 
 import Image from "next/image"
 import { useState } from "react"
-
+import hero1 from "../public/hero1.png"
+import hero2 from "../public/hero2.png"
+import hero3 from "../public/hero3.png"
 const ImageSwitch = () => {
   const [activeTab, setActiveTab] = useState("organize")
 
   const tabs = [
-    { key: "organize", label: "Organize" },
-    { key: "hired", label: "Get Hired" },
     { key: "boards", label: "Boards" },
+    { key: "hired", label: "Get Hired" },
+    { key: "organize", label: "Organize" },
   ]
 
   return (
@@ -34,19 +36,11 @@ const ImageSwitch = () => {
 
       {/* Image */}
       <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/40">
-        {activeTab === "organize" && (
-          <Image
-            src="https://i.pinimg.com/1200x/ed/6f/02/ed6f022dfe47b5cd753e86c5c1016f0b.jpg"
-            alt="organize"
-            width={800}
-            height={500}
-            className="w-full h-auto"
-          />
-        )}
+       
 
         {activeTab === "hired" && (
           <Image
-            src="https://i.pinimg.com/webp/1200x/e1/f7/a9/e1f7a9632742e2bdcd100e4336aef175.webp"
+            src={hero2}
             alt="hired"
             width={800}
             height={500}
@@ -56,8 +50,17 @@ const ImageSwitch = () => {
 
         {activeTab === "boards" && (
           <Image
-            src="https://i.pinimg.com/736x/a1/3a/9b/a13a9b6dcc3548d28c0cb427a5355ba2.jpg"
+            src={hero1}
             alt="boards"
+            width={800}
+            height={500}
+            className="w-full h-auto"
+          />
+        )}
+         {activeTab === "organize" && (
+          <Image
+            src={hero3}
+            alt="organize"
             width={800}
             height={500}
             className="w-full h-auto"
