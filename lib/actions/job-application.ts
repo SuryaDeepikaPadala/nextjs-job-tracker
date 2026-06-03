@@ -211,3 +211,50 @@ export const deleteJobApplication = async ({
     }
   }
 }
+export const moveJob = async ({
+  jobId,
+  fromColumnId,
+  toColumnId,
+}: {
+  jobId: string
+  fromColumnId: string
+  toColumnId: string
+}) => {
+  try {
+    await connectDB()
+    const session = await sessionData()
+
+    if (!session?.user) {
+      return { success: false, error: "Unauthorized" }
+    }
+
+    // 1. Remove the job from the original column array
+    await Column.findByIdAndUpdate(fromColumnId, {
+      $pull: { jobApplications: jobId },
+    })
+
+    // 2. Add the job into the targeted destination column array
+    await Column.findByIdAndUpdate(toColumnId, {
+      $push: { jobApplications: jobId },
+    })
+
+    // 3. Update the job application's tracking reference string identifier
+    // Fetch the new column name to map to the job's lowercase status
+    const targetColumn = await Column.findById(toColumnId)
+    
+    await JobApplication.findOneAndUpdate(
+      { _id: jobId, userId: session.user.id },
+      { 
+        columnId: toColumnId,
+        status: targetColumn ? targetColumn.name.toLowerCase() : "applied"
+      }
+    )
+
+    revalidatePath("/dashboard")
+
+    return { success: true }
+  } catch (error) {
+    console.error("Move error:", error)
+    return { success: false }
+  }
+}
