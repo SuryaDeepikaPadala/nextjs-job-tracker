@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📋 Job Tracker Dashboard
 
-## Getting Started
+A powerful, modern Kanban-style job application tracker designed to help job seekers stay organized, manage progress, and streamline their interview pipelines. Built using **Next.js**, **Mongoose/MongoDB**, **Better Auth**, and **@dnd-kit** for a highly interactive, responsive user experience.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* **Interactive Kanban Board:** Drag-and-drop workflow pipeline managed via a secure, single-intent visual handle icon (Grip indicator).
+* **Pipeline Micro-Controls:** Skip dragging entirely with an intuitive inline popover dropdown layout to jump apps across pipeline phases effortlessly.
+* **Fully Server-Validated Actions:** Built leveraging Next.js Server Actions for resilient tracking data manipulations (`deleteJobApplication`, `moveJob`).
+* **Secure Authentication Gateways:** Better Auth integration routes incoming traffic seamlessly between public onboarding views and private dashboards based on live session states.
+* **Smart Board Initialization:** Automatically provisions a fresh, fully-configured default board layout for newly registered users on their first sign-up.
+* **Zero-Jank React Rendering Architecture:** Hardened against SSR/Hydration tree count mismatches and dynamic React Hook runtime constraint anomalies.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+* **Framework:** Next.js (App Router, React Server Components)
+* **Authentication:** Better Auth (Stateful session management & crisp TypeScript handling)
+* **Database:** MongoDB via Mongoose Object Modeling Layer
+* **Drag & Drop Architecture:** `@dnd-kit/core`
+* **Styling:** Tailwind CSS (Modern linear gradients, backdrop blurs, responsive design)
+* **Icons:** Lucide React
+* **Notifications:** React Hot Toast
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📂 Project Architecture
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+├── app/
+│   ├── page.tsx                 # Responsive landing page with session-based routing
+│   ├── auth/
+│   │   ├── sign-in/
+│   │   │   └── page.tsx         # Sign In authentication page
+│   │   └── sign-up/
+│   │       └── page.tsx         # Sign Up authentication page
+│   └── dashboard/
+│       └── page.tsx             # Primary workspace fetching board metrics
+├── components/
+│   ├── Navbar.tsx               # Global navigation controller
+│   ├── Logout.tsx               # Session destruction handling button
+│   ├── ImageSwitching.tsx       # Dynamic landing page product presentation showcase
+│   ├── FeatureTabs.tsx          # Interactive product benefit selector for home page
+│   ├── KanbanBoard.tsx          # Hydration-safe parent workspace controller
+│   ├── JobCard.tsx              # Isolated, single-click accessible tracking node
+│   └── JobApplicationDialog.tsx # Centralized record mutation form shell
+├── lib/
+│   ├── auth.ts                  # Better Auth server configuration setup
+│   ├── auth-client.ts           # Better Auth client-side hook utilities
+│   ├── utils/                   # Foundational utility folders
+│   │   └── initializeDefaultBoard.ts # Automatic pipeline generator for new signups
+│   ├── actions/
+│   │   └── job-application.ts   # Next.js Server Actions modifying records securely
+│   ├── models/
+│   │   ├── board.ts             # Mongoose board schema
+│   │   ├── column.ts            # Mongoose column schema
+│   │   └── jobApplication.ts    # Hardened, index-optimized job data schemas
+│   └── db.ts                    # Safe singleton Mongoose orchestrator to prevent connection leaks
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
